@@ -1,4 +1,4 @@
-import {db} from "../firebase/config"
+import { db } from "../firebase/config"
 
 import {
     getAuth,
@@ -21,56 +21,63 @@ export const useAuthentication = () => {
 
     const auth = getAuth()
 
-    function checkIfIsCancelled (){ // essa função evita vazamento de memória
+    function checkIfIsCancelled() { // essa função evita vazamento de memória
 
         if (cancelled) {
             return
         }
     }
 
+    // register
     const createUser = async (data) => {
-     checkIfIsCancelled()
+        checkIfIsCancelled()
 
-     setLoading(true)
-     setError,(null)
-     
-     try {
-        
-        const {user} = await createUserWithEmailAndPassword(
-            auth,
-            data.email,
-            data.password
-        )
+        setLoading(true)
+        setError, (null)
 
-        await updateProfile(user, {
-            displayName: data.displayName
-        })
+        try {
 
-        setLoading(false)
+            const { user } = await createUserWithEmailAndPassword(
+                auth,
+                data.email,
+                data.password
+            )
 
-        return user
+            await updateProfile(user, {
+                displayName: data.displayName
+            })
 
-     } catch (error) {
-        console.log(error.message)
-        console.log(typeof error.message)
+            setLoading(false)
 
-        let systemErrorMessage
+            return user
 
-        if(error.message.includes("Password")){
-            systemErrorMessage = "A senha precisa conter pelo menos 6 caracteres."
-        } else if(error.message.includes("email-already")) {
-            systemErrorMessage = "E-mail já cadastrado."
-        } else {
-            systemErrorMessage = "Ocorreu um erro, por favor tente mais tarde."
+        } catch (error) {
+            console.log(error.message)
+            console.log(typeof error.message)
+
+            let systemErrorMessage
+
+            if (error.message.includes("Password")) {
+                systemErrorMessage = "A senha precisa conter pelo menos 6 caracteres."
+            } else if (error.message.includes("email-already")) {
+                systemErrorMessage = "E-mail já cadastrado."
+            } else {
+                systemErrorMessage = "Ocorreu um erro, por favor tente mais tarde."
+            }
+
+            setLoading(false)
+            setError(systemErrorMessage)
+
         }
-        
-        setLoading(false)
-        setError(systemErrorMessage)
-        
-     }
 
-     
     }
+
+    // logout - sign out
+    const logout = () => {
+        checkIfIsCancelled()
+        signOut(auth)
+    }
+
 
     useEffect(() => {
         return () => setCancelled(true)
@@ -81,5 +88,6 @@ export const useAuthentication = () => {
         createUser,
         error,
         loading,
+        logout,
     }
 }
