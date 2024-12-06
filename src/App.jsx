@@ -1,6 +1,8 @@
 import './App.css'
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+// context
+import { AuthProvider } from './context/AuthContext'
 
 // pages
 import Home from './pages/Home/Home'
@@ -13,6 +15,7 @@ import Register from './pages/Register/Register'
 function App() {
   return (
     <div className='App'>
+      <AuthProvider>
       <BrowserRouter>
       <Navbar />
         <div className='container'>
@@ -26,6 +29,7 @@ function App() {
         </div>
         <Footer />
       </BrowserRouter>
+      </AuthProvider>
     </div>
   )
 }
